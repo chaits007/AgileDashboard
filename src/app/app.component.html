@@ -1,21 +1,224 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<form (submit)="getTeamDataForGrid($event)" #searchTeamData="ngForm" name="searchTeamData">
+	<div class="row" style="margin:5px">
+		<div class="form-group" class="col-md-3">
+			<label for="buHeadSelect" class="select-header"> <b>Business Head</b> 
+			</label>
+			<select class="form-control input-sm" id="buHeadSelect" value="buHeadSelect" name="buHeadSelect" (change)="setPodLeadList($event)">
+				<option [value]="default" selected="selected">-select-</option>
+				<option [value]="listBuHead.buHead" *ngFor="let listBuHead of buHeadList">{{listBuHead.buHead}}</option>
+			</select>
+		</div>
+		<div class="form-group" class="col-md-3">
+			<label for="podLeadSelect" class="select-header"> <b>Pod Lead</b> 
+			</label>
+			<select class="form-control input-sm" id="podLeadSelect" value="podLeadSelect" name="podLeadSelect" (change)="setTeamList($event)">
+				<option [value]="default" selected="selected">-select-</option>
+				<option [value]="listPodLead.podLead" *ngFor="let listPodLead of podLeadList">{{listPodLead.podLead}}</option>
+			</select>
+		</div>
+		<div class="form-group" class="col-md-3">
+			<label for="teamNameSelect" class="select-header"> <b>Team Name</b> 
+			</label>
+			<select class="form-control input-sm" id="teamNameSelect" value="teamNameSelect" name="teamNameSelect">
+				<option [value]="default" selected="selected">-select-</option>
+				<option [value]="listTeamName.teamName" *ngFor="let listTeamName of teamNameList">{{listTeamName.teamName}}</option>
+			</select>
+    </div>
+    <div style="padding-top: 35px; padding-left: 10px">
+      <button class="myButton" type="submit" id="submit">Search</button>
+    </div>
+	</div>
 
-<router-outlet></router-outlet>
+	<div style="padding-top: 10px; padding-left: 20px">
+		<button class="myButton" type="submit" id="addNew" (click)="isAddNewHidden=!isAddNewHidden">Add New</button>
+	</div>
+</form>
+
+
+<form (submit)="postData($event)" #sprintDetails="ngForm" name="sprintDetails" [hidden]="isAddNewHidden">
+  
+  <div class="row row-header">Sprint Details</div>
+  
+	<div class="row" style="margin:5px">
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="teamNameEnter">Team Name</label>
+			<select class="form-control input-sm" id="teamNameEnter" value="teamNameEnter" name="teamNameEnter">
+				<option [value]="default" selected="selected">-select-</option>
+				<option [value]="listTeamName.teamName" *ngFor="let listTeamName of listTeamNames">{{listTeamName.teamName}}</option>
+			</select>
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="sprintNameEnter">Sprint Name</label>
+			<input type="text" class="form-control input-sm" ngModel id="sprintNameEnter" ngModel name="sprintNameEnter" value="sprintNameEnter">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="startDate">Start Date</label>
+			<input type="date" class="form-control input-sm" ngModel id="startDate" ngModel name="startDate" value="startDate">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="endDate">End Date</label>
+			<input type="date" class="form-control input-sm" ngModel id="endDate" ngModel name="endDate" value="endDate">
+		</div>
+	</div>
+	<div class="row" style="margin:5px">
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="commited">Commited</label>
+			<input type="number" class="form-control input-sm" [ngModel]="commited" name="commited" id="commited" placeholder="Commited" [disabled]="isDisabled" value="commited" (blur)="calculatePercent()">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="completed">Completed</label>
+			<input type="number" class="form-control input-sm" [ngModel]="completed" name="completed" id="completed" placeholder="Completed" (blur)="calculatePercent()" [disabled]="isDisabled" value="completed">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="ratio">Ratio</label>
+			<input type="text" class="form-control input-sm" [ngModel]="ratio" name="ratio" id="ratio" placeholder="Ratio" disabled="true" value="ratio">
+		</div>
+	</div>
+	<div class="row" style="margin:5px">
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="capacityValue">Capacity (Hrs)</label>
+			<input type="number" class="form-control input-sm" [ngModel]="capacityValue" id="capacityValue" name="capacityValue" placeholder="Capacity In Hours" value="capacityValue" [disabled]="isDisabled" (blur)="calculatePercent()">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="readyForSprint">Ready For Sprint</label>
+			<input type="number" class="form-control input-sm" ngModel name="readyForSprint" id="readyForSprint" placeholder="Ready For Sprint" [disabled]="isDisabled" value="readyForSprint">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="effortForSP">Effort For SP</label>
+			<input type="number" class="form-control input-sm" [ngModel]="effortForSP" name="effortForSP" id="effortForSP" placeholder="effortForSP" disabled="true" value="effortForSP">
+		</div>
+	</div>
+	<div class="row row-header">Defects Details</div>
+	<div class="row" style="margin:5px">
+		<div class="form-group" class="col-md-3 mb-4">
+			<label for="nOfDefectInAlfaDelta">Defects in Alfa,Delta</label>
+			<input type="number" class="form-control input-sm" name="nOfDefectInAlfaDelta" id="nOfDefectInAlfaDelta" ngModel placeholder="No. Of Defects IN Alfa,Delta" [disabled]="isDisabled" value="No of Defects">
+		</div>
+		<div class="form-group" class="col-md-3 mb-4">
+			<label for="nOfDefectInBetaAndAbove">Defects In Beta And Above</label>
+			<input type="number" class="form-control input-sm" name="nOfDefectInBetaAndAbove" id="nOfDefectInBetaAndAbove" ngModel placeholder="No. Of Defects In Beta And Above" [disabled]="isDisabled" value="No of Defects">
+		</div>
+	</div>
+	<div class="row row-header">Wastage details</div>
+	<div class="row" style="margin:5px">
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="requirementChanges">Requirement Changes</label>
+			<input type="number" class="form-control input-sm" [ngModel]="requirementChanges" name="requirementChanges" id="requirementChanges" placeholder="Number Of Requirement Changes" [disabled]="isDisabled" value="requirementChanges" (blur)="calculatePercent()">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="devTeamNotDeveloping">Team Not Developing</label>
+			<input type="number" class="form-control input-sm" [ngModel]="devTeamNotDeveloping" name="devTeamNotDeveloping" id="devTeamNotDeveloping" placeholder="Number Of Dev Team Not Developing" [disabled]="isDisabled" value="devTeamNotDeveloping" (blur)="calculatePercent()">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="designChanges">Design Changes</label>
+			<input type="number" class="form-control input-sm" [ngModel]="designChanges" name="designChanges" id="designChanges" placeholder="Number Of Design Changes" [disabled]="isDisabled" value="designChanges" (blur)="calculatePercent()">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="prodIssues">Prod Issues</label>
+			<input type="number" class="form-control input-sm" [ngModel]="prodIssues" name="prodIssues" id="prodIssues" placeholder="Number Of Prod Issues" [disabled]="isDisabled" value="prodIssues" (blur)="calculatePercent()">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="defectsRework">Defects Rework</label>
+			<input type="number" class="form-control input-sm" [ngModel]="defectsRework" name="defectsRework" id="defectsRework" placeholder="Defects Rework" [disabled]="isDisabled" value="defectsRework" (blur)="calculatePercent()">
+		</div>
+	</div>
+	<div class="row" style="margin:5px">
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="reqChangesPer">Requirement Changes(%)</label>
+			<input type="number" class="form-control input-sm" [ngModel]="reqChangesPer" name="reqChangesPer" id="reqChangesPer" ngModel placeholder="reqChangesPer" disabled="true" value="reqChangesPer">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="devTeamNotDevPer">Team Not Developing(%)</label>
+			<input type="number" class="form-control input-sm" [ngModel]="devTeamNotDevPer" name="devTeamNotDevPer" id="devTeamNotDevPer" ngModel placeholder="devTeamNotDevPer" disabled="true" value="devTeamNotDevPer">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="designChangesPer">Design Changes(%)</label>
+			<input type="number" class="form-control input-sm" [ngModel]="designChangesPer" name="designChangesPer" id="designChangesPer" ngModel placeholder="designChangesPer" disabled="true" value="designChangesPer">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="prodIssuesPer">Prod Issues(%)</label>
+			<input type="number" class="form-control input-sm" [ngModel]="prodIssuesPer" name="prodIssuesPer" id="prodIssuesPer" ngModel placeholder="prodIssuesPer" disabled="true" value="prodIssuesPer">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="defectsPer">Defects (Rework %)</label>
+			<input type="number" class="form-control input-sm" [ngModel]="defectsPer" name="defectsPer" id="defectsPer" ngModel placeholder="defectsPer" disabled="true" value="defectsPer">
+		</div>
+	</div>
+	<div class="row row-header">InSprint Automation details</div>
+	<div class="row" style="margin:5px">
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="noOfTestScen">No. Of Test Scenarios</label>
+			<input type="number" class="form-control input-sm" [ngModel]="noOfTestScen" name="noOfTestScen" id="noOfTestScen" placeholder="Number of Scenarios" [disabled]="isDisabled" value="noOfTestScen">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="regScenarios">Regression Scenarios</label>
+			<input type="number" class="form-control input-sm" [ngModel]="regScenarios" name="regScenarios" id="regScenarios" placeholder="Regression scenarios" [disabled]="isDisabled" value="regScenarios">
+		</div>
+		<div class="form-group" class="col-md-2 mb-4">
+			<label for="automatedScenarios">Automated Scenarios</label>
+			<input type="number" class="form-control input-sm" [ngModel]="automatedScenarios" name="automatedScenarios" id="automatedScenarios" placeholder="Automated scenarios" [disabled]="isDisabled" value="automatedScenarios">
+		</div>
+	</div>
+	<div class="row" style="margin:5px">
+		<div class="form-group" class="col-md-6 mb-6">
+			<label for="comment">Comments</label>
+			<textarea class="form-control" rows="5" id="comment" [ngModel]="comment" name="comment" id="comment" placeholder="Please enter your comments here"></textarea>
+		</div>
+	</div>
+	<div style="margin:15px">
+		<button type="submit" id="submit" (click)="isAddNewHidden=true">Submit</button>
+	</div>
+</form>
+
+<form>
+	<div class="row-header">Sprint Information</div>
+	<div style="margin:10px; padding-left: 30px; width:97.5%;">
+		<!-- <input type="text" ng-init="testt" (blur)="onGridSearch(titleInput.value)" placeholder="find" #titleInput> -->
+		<ag-grid-angular #agGrid style="height: 300px;" class="mygrid ag-theme-balham my-grid" id="myGrid" class="ag-theme-balham" [gridOptions]="gridOptions" [rowData]="rowData" [columnDefs]="columnDefs" [enableSorting]="true" [multiSortKey]="multiSortKey" [enableFilter]="true" [pagination]="true" [paginationPageSize]="10" [rowSelection]="single" [isRowSelectable]="isRowSelectable" [defaultColDef]="defaultColDef" (rowClicked)="onMyRowClicked($event)"></ag-grid-angular>
+	</div>
+	
+	<div class="row-header" id="dashboardDiv" (click)="fillDashboard()">Dashboard</div>
+	<div [hidden]="isDashboardHidden">
+		<div style="padding:2%">
+			<div style="display: block" class="div-control-left">
+			<canvas class="chart-control-right" baseChart
+						[datasets]="capacityVelocityData"
+						[labels]="lineChartLabels"
+						[options]="lineChartOptions"
+						[colors]="lineChartColors"
+						[legend]="lineChartLegend"
+						[chartType]="lineChartType">
+			</canvas>
+			</div>
+			<div style="display: block" class="div-control-right">
+				<canvas class="chart-control-right" baseChart
+							[datasets]="wasteData"
+							[labels]="lineChartLabels"
+							[options]="lineChartOptions"
+							[colors]="lineChartColors"
+							[legend]="lineChartLegend"
+							[chartType]="lineChartType">
+				</canvas>
+			</div>
+			<div style="display: block" class="div-control-left">
+				<canvas class="chart-control-left" baseChart 
+						[datasets]="inSprintAutomationData"
+						[labels]="barChartLabels"
+						[options]="barChartOptions"
+						[legend]="barChartLegend"
+						[chartType]="barChartType">
+				</canvas>
+			</div>
+			<div style="display: block" class="div-control-right">
+				<canvas class="chart-control-right" baseChart
+							[datasets]="defectsReworkData"
+							[labels]="lineChartLabels"
+							[options]="lineChartOptions"
+							[colors]="lineChartColors"
+							[legend]="lineChartLegend"
+							[chartType]="lineChartType">
+				</canvas>
+			</div>
+		</div>
+	</div>
+</form>
